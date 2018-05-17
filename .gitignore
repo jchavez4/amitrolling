@@ -1,0 +1,6 @@
+jupyter_env/
+v_env/
+.ipynb_checkpoints/
+keys.sh
+*.pyc
+*.ipynb
