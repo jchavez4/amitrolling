@@ -1,6 +1,9 @@
 jupyter_env/
 v_env/
 .ipynb_checkpoints/
+nontroll-tweets/
+troll-tweets/
 keys.sh
+.DS_Store
 *.pyc
 *.ipynb

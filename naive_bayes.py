@@ -116,7 +116,7 @@ def classify(tweet_text):
 
     label = clf.predict(tweet_matrix)
 
-    return label
+    return label[0]
 
 if __name__ == '__main__':
     # X, y= freq_matrix()
