@@ -8,14 +8,22 @@ from naive_bayes import classify
 app = Flask(__name__)
 app.secret_key = "soemonov"
 
+
 @app.route("/")
 def index():
+    """Display homepage."""
 
     return render_template("index.html")
 
 
 @app.route("/get-label.json", methods=["POST"])
 def get_label():
+    """
+    Retrieves link from user and runs classifier on tweet.
+
+    Return values
+        _: jsonified response containing label of either 'troll' or 'nontroll'
+    """
 
     api = twitter.Api(
         consumer_key=os.environ['TWITTER_CONSUMER_KEY'],
@@ -27,14 +35,20 @@ def get_label():
     tweet_id = get_id(tweet_url)
 
     status = api.GetStatus(tweet_id)
-    
+
     label = classify(status.text)
 
     return jsonify({"label": label})
 
-def get_id(tweet_url):
-    return tweet_url.split("/")[-1]
 
+def get_id(tweet_url):
+    """
+    Retrieves tweet id from url.
+
+    Return values
+        _: tweet id
+    """
+    return tweet_url.split("/")[-1]
 
 
 if __name__ == '__main__':
