@@ -1,7 +1,14 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
     <title>Is that a troll?</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/trolling.css">
+
 </head>
 
 <body>
@@ -10,18 +17,19 @@
 
         <form id="tweet-form">
             <div class="form-group">
-                <label>Tweet Link
+                <h2>Tweet Link
                     <input class="form-control" type="url" id="tweet-link">
-                </label>
+                </h2>
             </div>
+
+            <div id="embed-tweet"></div>
 
             <div class="form-group">
                 <button type="submit" id="tweet-form-bttn" class="btn btn-primary">Troll?</button>
             </div>
         </form> 
 
-        <div id="embed-tweet"></div>
-        <div id="label"></div>
+        <div><h4 id="label"></h4></div>
     
     </div>
 

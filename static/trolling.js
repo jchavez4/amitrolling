@@ -1,15 +1,27 @@
 "use strict";
 
-function getLabel(evt) {
+function embedTweet(evt) {
     evt.preventDefault();
 
     let data = {"tweet": $("#tweet-link").val()};
 
-    $.post("/get-label.json", data, function(results) {
-        console.log(results["html"]);
-        $("#embed-tweet").html(results["html"]);
-        $("#label").html(results["label"]);
+    $.post("/get-embed-tweet.json", data, function(results) {
+        $("#embed-tweet").html(results.html);
     });
 }
+
+function getLabel(evt) {
+    evt.preventDefault();
+
+    $("#label").empty();
+
+    let data = {"tweet": $("#tweet-link").val()};
+
+    $.post("/get-label.json", data, function(results) {
+        $("#label").html(results.label);
+    });
+}
+
+$("#tweet-link").on("input", embedTweet);
 
 $("#tweet-form").on("submit", getLabel);

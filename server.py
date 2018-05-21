@@ -8,6 +8,12 @@ from naive_bayes import classify
 app = Flask(__name__)
 app.secret_key = "soemonov"
 
+api = twitter.Api(
+    consumer_key=os.environ['TWITTER_CONSUMER_KEY'],
+    consumer_secret=os.environ['TWITTER_CONSUMER_SECRET'],
+    access_token_key=os.environ['TWITTER_ACCESS_TOKEN_KEY'],
+    access_token_secret=os.environ['TWITTER_ACCESS_TOKEN_SECRET'])
+
 
 @app.route("/")
 def index():
@@ -25,12 +31,6 @@ def get_label():
         _: jsonified response containing label of either 'troll' or 'nontroll'
     """
 
-    api = twitter.Api(
-        consumer_key=os.environ['TWITTER_CONSUMER_KEY'],
-        consumer_secret=os.environ['TWITTER_CONSUMER_SECRET'],
-        access_token_key=os.environ['TWITTER_ACCESS_TOKEN_KEY'],
-        access_token_secret=os.environ['TWITTER_ACCESS_TOKEN_SECRET'])
-
     tweet_url = request.form.get("tweet")
     tweet_id = get_id(tweet_url)
 
@@ -39,6 +39,22 @@ def get_label():
     label = classify(status.text)
 
     return jsonify({"label": label})
+
+
+@app.route("/get-embed-tweet.json", methods=["POST"])
+def embed_tweet():
+    """
+    Retrieves link from input and returns embeddable form.
+
+    Return values
+        _: jsonified response containing information for embeddable tweet
+    """
+
+    tweet_url = request.form.get("tweet")
+
+    status = api.GetStatusOembed(url=tweet_url)
+
+    return jsonify(status)
 
 
 def get_id(tweet_url):
