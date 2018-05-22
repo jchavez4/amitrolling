@@ -1,7 +1,9 @@
 import os
 import twitter
+import oauth2 as oauth
+import urlparse
 
-from flask import Flask, request, render_template, jsonify
+from flask import flash, Flask, jsonify, redirect, request, render_template, session
 from model import connect_to_db
 from naive_bayes import classify
 
@@ -14,12 +16,73 @@ api = twitter.Api(
     access_token_key=os.environ['TWITTER_ACCESS_TOKEN_KEY'],
     access_token_secret=os.environ['TWITTER_ACCESS_TOKEN_SECRET'])
 
+consumer_key = os.environ['TWITTER_CONSUMER_KEY']
+consumer_secret = os.environ['TWITTER_CONSUMER_SECRET']
+
+consumer = oauth.Consumer(consumer_key, consumer_secret)
+
+request_token_url = 'https://api.twitter.com/oauth/request_token'
+access_token_url = 'https://api.twitter.com/oauth/access_token'
+authorize_url = 'https://api.twitter.com/oauth/authorize'
+
 
 @app.route("/")
 def index():
     """Display homepage."""
 
     return render_template("index.html")
+
+
+@app.route("/sign_in")
+def sign_in():
+    """
+    """
+
+    return render_template("sign_in.html")
+
+
+@app.route("/authorize")
+def auth():
+    client = oauth.Client(consumer)
+
+    resp, content = client.request(request_token_url, "GET")
+
+    if resp['status'] != '200':
+        return redirect("/sign_in")
+
+    request_token = dict(urlparse.parse_qsl(content))
+
+    #instead of storing in session, should store in db for security
+    session['oauth_token'] = request_token['oauth_token']
+    session['oauth_token_secret'] = request_token['oauth_token_secret']
+
+    authorize = "{}?oauth_token={}".format(authorize_url, request_token['oauth_token'])
+
+    return redirect(authorize)
+
+
+@app.route("/set-auth")
+def set_auth_token():
+    #check if denied, delete session
+    #if approved, reset token and client
+    oauth_verifier = request.args.get("oauth_verifier")
+
+    if not oauth_verifier:
+        session.clear()
+        flash("You haven't authorized TrollIAm")
+        #maybe alert user they haven't authorized app
+        return redirect("/sign_in")
+
+    token = oauth.Token(session['oauth_token'], session['oauth_token_secret'])
+    token.set_verifier(oauth_verifier)
+    client = oauth.Client(consumer, token)
+
+    resp, content = client.request(access_token_url, "POST")
+    access_token = dict(urlparse.parse_qsl(content))
+
+    print access_token
+
+    return redirect("/")
 
 
 @app.route("/get-label.json", methods=["POST"])

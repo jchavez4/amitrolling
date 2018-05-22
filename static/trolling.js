@@ -10,6 +10,8 @@ function embedTweet(evt) {
     });
 }
 
+$("#tweet-link").on("input", embedTweet);
+
 function getLabel(evt) {
     evt.preventDefault();
 
@@ -21,7 +23,5 @@ function getLabel(evt) {
         $("#label").html(results.label);
     });
 }
-
-$("#tweet-link").on("input", embedTweet);
 
 $("#tweet-form").on("submit", getLabel);
