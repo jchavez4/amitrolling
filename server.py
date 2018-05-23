@@ -19,7 +19,7 @@ consumer = oauth.Consumer(consumer_key, consumer_secret)
 
 request_token_url = 'https://api.twitter.com/oauth/request_token'
 access_token_url = 'https://api.twitter.com/oauth/access_token'
-authorize_url = 'https://api.twitter.com/oauth/authorize'
+authorize_url = 'https://api.twitter.com/oauth/authenticate'
 
 
 @app.route("/")
@@ -74,14 +74,6 @@ def set_accesss_token():
 
     resp, content = client.request(access_token_url, "POST")
     access_token = dict(urlparse.parse_qsl(content))
-
-    #access_token has user_id, should save user_id, token, token_secret in db
-    #so user doesn't have to authorize app every time.
-
-    #can save user_id in a session so that it doesn't redirect them to
-    #re-authorize, need to add logout button then to clear session
-
-    #how to check if user is signed in to twitter or not?
 
     #setting api to use user's keys
     api = twitter.Api(consumer_key, consumer_secret,
