@@ -1,18 +1,6 @@
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Is that a troll?</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/trolling.css">
-
-</head>
-
-<body>
-    
+{% block body %}
     <div class="container">
 
         <form id="tweet-form">
@@ -33,9 +21,6 @@
     
     </div>
 
-        <script src="http://code.jquery.com/jquery.js"></script>
-        <script src="/static/trolling.js"></script>
-
-</body>
-
-</html>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="/static/trolling.js"></script>
+{% endblock %}

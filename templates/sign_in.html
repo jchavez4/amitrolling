@@ -1,15 +1,9 @@
-<html>
-<head>
-    <title>Is that a troll?</title>
-</head>
-{% block content %}
-<body>
-    {% for message in get_flashed_messages() %}
-        {{ alert(message) }}
-    {% endfor %}
-    <form action="/authorize">
-        <button type="submit">Sign in with Twitter</button>
-     </form>
-</body>
+{% extends 'base.html' %}
+
+{% block body %}
+    <div class="container">
+        <form action="/authorize">
+            <button type="submit">Sign in with Twitter</button>
+         </form>
+     </div>
 {% endblock %}
-</html>

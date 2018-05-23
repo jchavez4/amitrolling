@@ -61,16 +61,13 @@ def auth():
     return redirect(authorize)
 
 
-@app.route("/set-auth")
-def set_auth_token():
-    #check if denied, delete session
-    #if approved, reset token and client
+@app.route("/set-access")
+def set_accesss_token():
     oauth_verifier = request.args.get("oauth_verifier")
 
     if not oauth_verifier:
         session.clear()
-        flash("You haven't authorized TrollIAm")
-        #maybe alert user they haven't authorized app
+        flash("You haven't authorized the TrolliAm app")
         return redirect("/sign_in")
 
     token = oauth.Token(session['oauth_token'], session['oauth_token_secret'])
