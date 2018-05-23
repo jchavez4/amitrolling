@@ -10,11 +10,7 @@ from naive_bayes import classify
 app = Flask(__name__)
 app.secret_key = "soemonov"
 
-api = twitter.Api(
-    consumer_key=os.environ['TWITTER_CONSUMER_KEY'],
-    consumer_secret=os.environ['TWITTER_CONSUMER_SECRET'],
-    access_token_key=os.environ['TWITTER_ACCESS_TOKEN_KEY'],
-    access_token_secret=os.environ['TWITTER_ACCESS_TOKEN_SECRET'])
+api = None
 
 consumer_key = os.environ['TWITTER_CONSUMER_KEY']
 consumer_secret = os.environ['TWITTER_CONSUMER_SECRET']
@@ -63,6 +59,8 @@ def auth():
 
 @app.route("/set-access")
 def set_accesss_token():
+    global api
+
     oauth_verifier = request.args.get("oauth_verifier")
 
     if not oauth_verifier:
@@ -77,7 +75,18 @@ def set_accesss_token():
     resp, content = client.request(access_token_url, "POST")
     access_token = dict(urlparse.parse_qsl(content))
 
-    print access_token
+    #access_token has user_id, should save user_id, token, token_secret in db
+    #so user doesn't have to authorize app every time.
+
+    #can save user_id in a session so that it doesn't redirect them to
+    #re-authorize, need to add logout button then to clear session
+
+    #how to check if user is signed in to twitter or not?
+
+    #setting api to use user's keys
+    api = twitter.Api(consumer_key, consumer_secret,
+                      access_token['oauth_token'],
+                      access_token['oauth_token_secret'])
 
     return redirect("/")
 
