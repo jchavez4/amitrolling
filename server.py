@@ -1,6 +1,6 @@
+import oauth2 as oauth
 import os
 import twitter
-import oauth2 as oauth
 import urlparse
 
 from flask import flash, Flask, jsonify, redirect, request, render_template, session
@@ -49,6 +49,7 @@ def auth():
     request_token = dict(urlparse.parse_qsl(content))
 
     #instead of storing in session, should store in db for security
+    #maybe unnecessary, request tokens get thrown away anyways
     session['oauth_token'] = request_token['oauth_token']
     session['oauth_token_secret'] = request_token['oauth_token_secret']
 
@@ -83,6 +84,53 @@ def set_accesss_token():
     return redirect("/")
 
 
+@app.route("/get-timeline.json")
+def embed_timeline():
+    tweets = api.GetHomeTimeline()
+
+    timeline_id = create_collection(tweets)
+
+    html = '<a class="twitter-timeline"\
+            href="https://twitter.com/{}/timelines/{}">\
+            {}\
+            </a>'.format("_", timeline_id, "User Timeline")
+
+    return jsonify({"html": html})
+
+
+def create_collection(tweets):
+    payload = {'name': 'test_collection'}
+    response = api._RequestUrl('https://api.twitter.com/1.1/collections/create.json',
+                               'POST', data=payload)
+
+    data = api._ParseAndCheckTwitter(response.content.decode('utf-8'))
+
+    timeline_id = data['response']['timeline_id']
+
+    for tweet in tweets:
+        payload = {'id': timeline_id, 'tweet_id': tweet.id}
+        response = api._RequestUrl('https://api.twitter.com/1.1/collections/entries/add.json',
+                                   'POST', data=payload)
+
+    return timeline_id
+
+
+@app.route("/get-embed-tweet.json", methods=["POST"])
+def embed_tweet():
+    """
+    Retrieves link from input and returns embeddable form.
+
+    Return values
+        _: jsonified response containing information for embeddable tweet
+    """
+
+    tweet_url = request.form.get("tweet")
+
+    status = api.GetStatusOembed(url=tweet_url)
+
+    return jsonify(status)
+
+
 @app.route("/get-label.json", methods=["POST"])
 def get_label():
     """
@@ -100,22 +148,6 @@ def get_label():
     label = classify(status.text)
 
     return jsonify({"label": label})
-
-
-@app.route("/get-embed-tweet.json", methods=["POST"])
-def embed_tweet():
-    """
-    Retrieves link from input and returns embeddable form.
-
-    Return values
-        _: jsonified response containing information for embeddable tweet
-    """
-
-    tweet_url = request.form.get("tweet")
-
-    status = api.GetStatusOembed(url=tweet_url)
-
-    return jsonify(status)
 
 
 def get_id(tweet_url):

@@ -12,6 +12,16 @@ function embedTweet(evt) {
 
 $("#tweet-link").on("input", embedTweet);
 
+function embedTimeline(evt) {
+    $.get("/get-timeline.json", function(results) {
+        $("#embed-timeline").html(results.hmtl);
+        console.log(results);
+    });
+    console.log("timeline will load now.");
+}
+
+$(window).on("load", embedTimeline);
+
 function getLabel(evt) {
     evt.preventDefault();
 
