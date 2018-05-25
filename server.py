@@ -35,6 +35,15 @@ def sign_in():
     return render_template("sign_in.html")
 
 
+@app.route("/logout")
+def logout():
+    flash("See you next time, @{}!".format(session["user"][1]))
+
+    session.clear()
+
+    return redirect("/")
+
+
 @app.route("/TrolliAm")
 def index():
     """Display TrolliAm homepage."""
@@ -49,16 +58,8 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/logout")
-def logout():
-    flash("See you next time, @{}!".format(session["user"][1]))
-
-    session.clear()
-
-    return redirect("/")
-
-
 def set_api(twitter_token):
+    """Maybe should figure out a way to do this without a global variable."""
     global api
 
     print twitter_token
@@ -96,7 +97,7 @@ def auth():
 
 
 @app.route("/set-access")
-def set_accesss_token():
+def set_access_token():
     oauth_verifier = request.args.get("oauth_verifier")
 
     if not oauth_verifier:

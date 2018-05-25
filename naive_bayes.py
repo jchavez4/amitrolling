@@ -1,11 +1,17 @@
 import numpy as np
 import pandas as pd
-import pickle
+import cPickle as pickle
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 from sklearn import cross_validation
 from sklearn import metrics
+
+with open('vectorizer.pickle') as v:
+    vectorizer = pickle.load(v)
+
+with open('classifier.pickle') as c:
+    clf = pickle.load(c)
 
 
 def load_data():
@@ -105,12 +111,6 @@ def classify(tweet_text):
         label: String containing either 'troll' or 'nontroll'
 
     """
-
-    with open('vectorizer.pickle') as v:
-        vectorizer = pickle.load(v)
-
-    with open('classifier.pickle') as c:
-        clf = pickle.load(c)
 
     tweet_matrix = vectorizer.transform([tweet_text])
 
