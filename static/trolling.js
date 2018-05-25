@@ -12,6 +12,7 @@ function embedTweet(evt) {
 
 $("#tweet-link").on("input", embedTweet);
 
+
 function embedTimeline(evt) {
     $.get("/get-timeline.json", function(results) {
         $("#embed-timeline").html(results.hmtl);

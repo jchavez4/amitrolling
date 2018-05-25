@@ -26,6 +26,13 @@ authorize_url = 'https://api.twitter.com/oauth/authenticate'
 def index():
     """Display homepage."""
 
+    twitter_token = session.get('twitter_token')
+
+    if not twitter_token:
+        return redirect("/sign_in")
+
+    set_api(twitter_token)
+
     return render_template("index.html")
 
 
@@ -33,35 +40,63 @@ def index():
 def sign_in():
     """
     """
+    twitter_token = session.get('twitter_token')
+
+    if twitter_token:
+        flash("Welcome @{}!".format(session["user"][1]))
+        return redirect("/")
 
     return render_template("sign_in.html")
 
 
+@app.route("/logout")
+def logout():
+    flash("See you next time, @{}!".format(session["user"][1]))
+
+    session.clear()
+
+    return redirect("/sign_in")
+
+
+def set_api(twitter_token):
+    global api
+
+    print twitter_token
+
+    api = twitter.Api(consumer_key, consumer_secret, twitter_token[0],
+                      twitter_token[1])
+
+
 @app.route("/authorize")
 def auth():
-    client = oauth.Client(consumer)
+    twitter_token = session.get('twitter_token')
 
-    resp, content = client.request(request_token_url, "GET")
+    if twitter_token:
+        flash("Welcome @{}".format(session['user'][1]))
+        set_api(twitter_token)
 
-    if resp['status'] != '200':
-        return redirect("/sign_in")
+        return redirect("/")
 
-    request_token = dict(urlparse.parse_qsl(content))
+    else:
+        client = oauth.Client(consumer)
 
-    #instead of storing in session, should store in db for security
-    #maybe unnecessary, request tokens get thrown away anyways
-    session['oauth_token'] = request_token['oauth_token']
-    session['oauth_token_secret'] = request_token['oauth_token_secret']
+        resp, content = client.request(request_token_url, "GET")
 
-    authorize = "{}?oauth_token={}".format(authorize_url, request_token['oauth_token'])
+        if resp['status'] != '200':
+            return redirect("/sign_in")
 
-    return redirect(authorize)
+        request_token = dict(urlparse.parse_qsl(content))
+
+        session['request_token'] = (request_token['oauth_token'],
+                                    request_token['oauth_token_secret'])
+
+        authorize = "{}?oauth_token={}".format(authorize_url, request_token['oauth_token'])
+
+        return redirect(authorize)
 
 
 @app.route("/set-access")
 def set_accesss_token():
-    global api
-
     oauth_verifier = request.args.get("oauth_verifier")
 
     if not oauth_verifier:
@@ -69,7 +104,7 @@ def set_accesss_token():
         flash("You haven't authorized the TrolliAm app")
         return redirect("/sign_in")
 
-    token = oauth.Token(session['oauth_token'], session['oauth_token_secret'])
+    token = oauth.Token(session['request_token'][0], session['request_token'][1])
     token.set_verifier(oauth_verifier)
     client = oauth.Client(consumer, token)
 
@@ -77,9 +112,15 @@ def set_accesss_token():
     access_token = dict(urlparse.parse_qsl(content))
 
     #setting api to use user's keys
-    api = twitter.Api(consumer_key, consumer_secret,
-                      access_token['oauth_token'],
-                      access_token['oauth_token_secret'])
+    # api = twitter.Api(consumer_key, consumer_secret,
+    #                   access_token['oauth_token'],
+    #                   access_token['oauth_token_secret'])
+
+    session['user'] = (access_token['user_id'], access_token['screen_name'])
+    session['twitter_token'] = (access_token['oauth_token'],
+                                access_token['oauth_token_secret'])
+
+    set_api(session['twitter_token'])
 
     return redirect("/")
 
@@ -90,10 +131,9 @@ def embed_timeline():
 
     timeline_id = create_collection(tweets)
 
-    html = '<a class="twitter-timeline"\
-            href="https://twitter.com/{}/timelines/{}">\
-            {}\
-            </a>'.format("_", timeline_id, "User Timeline")
+    print timeline_id
+
+    html = '<a class="twitter-timeline"href="https://twitter.com/{}/timelines/{}">{}</a>'.format("_", timeline_id, "User Timeline")
 
     return jsonify({"html": html})
 
