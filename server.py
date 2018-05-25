@@ -23,8 +23,21 @@ authorize_url = 'https://api.twitter.com/oauth/authenticate'
 
 
 @app.route("/")
+def sign_in():
+    """Display sign in page."""
+
+    twitter_token = session.get('twitter_token')
+
+    if twitter_token:
+        flash("Welcome @{}!".format(session["user"][1]))
+        return redirect("/TrolliAm")
+
+    return render_template("sign_in.html")
+
+
+@app.route("/TrolliAm")
 def index():
-    """Display homepage."""
+    """Display TrolliAm homepage."""
 
     twitter_token = session.get('twitter_token')
 
@@ -36,26 +49,13 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/sign_in")
-def sign_in():
-    """
-    """
-    twitter_token = session.get('twitter_token')
-
-    if twitter_token:
-        flash("Welcome @{}!".format(session["user"][1]))
-        return redirect("/")
-
-    return render_template("sign_in.html")
-
-
 @app.route("/logout")
 def logout():
     flash("See you next time, @{}!".format(session["user"][1]))
 
     session.clear()
 
-    return redirect("/sign_in")
+    return redirect("/")
 
 
 def set_api(twitter_token):
