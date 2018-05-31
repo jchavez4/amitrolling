@@ -4,7 +4,7 @@ import twitter
 import urlparse
 
 from flask import flash, Flask, jsonify, redirect, request, render_template, session
-from model import connect_to_db
+from model import Account, connect_to_db, db, Tweet
 from naive_bayes import classify
 
 app = Flask(__name__)
@@ -62,8 +62,6 @@ def set_api(twitter_token):
     """Maybe should figure out a way to do this without a global variable."""
     global api
 
-    print twitter_token
-
     api = twitter.Api(consumer_key, consumer_secret, twitter_token[0],
                       twitter_token[1])
 
@@ -112,11 +110,6 @@ def set_access_token():
     resp, content = client.request(access_token_url, "POST")
     access_token = dict(urlparse.parse_qsl(content))
 
-    #setting api to use user's keys
-    # api = twitter.Api(consumer_key, consumer_secret,
-    #                   access_token['oauth_token'],
-    #                   access_token['oauth_token_secret'])
-
     session['user'] = (access_token['user_id'], access_token['screen_name'])
     session['twitter_token'] = (access_token['oauth_token'],
                                 access_token['oauth_token_secret'])
@@ -131,8 +124,6 @@ def embed_timeline():
     tweets = api.GetHomeTimeline()
 
     timeline_id = create_collection(tweets)
-
-    print timeline_id
 
     html = '<a class="twitter-timeline"href="https://twitter.com/{}/timelines/{}">{}</a>'.format("_", timeline_id, "User Timeline")
 
@@ -199,6 +190,67 @@ def get_id(tweet_url):
         _: tweet id
     """
     return tweet_url.split("/")[-1]
+
+
+@app.route("/tweet-dates.json")
+def get_tweet_dates():
+    month_counts = []
+ 
+    dates = db.session.query(Tweet.created_str).all()
+    #get rid of time stamp
+    all_dates = [item[0].split()[0] for item in dates if item[0]]
+    #get rid of day, only month and year
+    only_months = [item.split("-")[:2] for item in all_dates]
+
+    years = {}
+
+    #create double dictionary to get counts per year per month of tweets
+    for date in only_months:
+        years[int(date[0])] = years.get(int(date[0]), {})
+
+        month_dict = years.get(int(date[0]))
+
+        month_dict[int(date[1])] = month_dict.get(int(date[1]), 0) + 1
+
+    #create list of counts per month per year to send
+    month_counts = []
+    for key, value in sorted(years.items()):
+        if key == 2016 or key == 2017:
+            counts = []
+            for month, count in sorted(years.get(key).items()):
+                counts.append(count)
+            month_counts.append(counts)
+
+    data_dict = {
+            "labels": [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec"
+            ],
+            "datasets": [
+                {
+                    "data": month_counts[0],
+                    "backgroundColor": [
+                        "#FF6384",
+                        "#36A2EB",
+                    ],
+                    "hoverBackgroundColor": [
+                        "#FF6384",
+                        "#36A2EB",
+                    ]
+                }]
+        }
+
+    return jsonify(data_dict)
 
 
 if __name__ == '__main__':

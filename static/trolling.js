@@ -18,10 +18,9 @@ function embedTimeline(evt) {
         $("#embed-timeline").html(results.hmtl);
         console.log(results);
     });
-    console.log("timeline will load now.");
 }
 
-$(window).on("load", embedTimeline);
+//$(window).on("load", embedTimeline);
 
 function getLabel(evt) {
     evt.preventDefault();
@@ -36,3 +35,25 @@ function getLabel(evt) {
 }
 
 $("#tweet-form").on("submit", getLabel);
+
+let ctx_line = $("#tweetTimeChart").get(0).getContext("2d");
+
+$.get("/tweet-dates.json", function (results) {
+    //console.log(results.datasets.months);
+    let myLineChart = new Chart(ctx_line, {
+        type: 'line',
+        data: results,
+        options: {
+            responsive : true,
+            scales: {
+                xAxes: [{
+                    time: {
+                        unit: 'month'
+                    }
+                }]
+            }
+        }
+    });
+
+    $("#tweetLegend").html(myLineChart.generateLegend());
+});
