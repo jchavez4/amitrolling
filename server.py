@@ -1,5 +1,6 @@
 import oauth2 as oauth
 import os
+import troll_data
 import twitter
 import urlparse
 
@@ -194,63 +195,27 @@ def get_id(tweet_url):
 
 @app.route("/tweet-dates.json")
 def get_tweet_dates():
-    month_counts = []
- 
+
     dates = db.session.query(Tweet.created_str).all()
+
     #get rid of time stamp
     all_dates = [item[0].split()[0] for item in dates if item[0]]
     #get rid of day, only month and year
     only_months = [item.split("-")[:2] for item in all_dates]
 
-    years = {}
+    data = troll_data.count_per_month(only_months)
 
-    #create double dictionary to get counts per year per month of tweets
-    for date in only_months:
-        years[int(date[0])] = years.get(int(date[0]), {})
+    return jsonify({"data": data})
 
-        month_dict = years.get(int(date[0]))
 
-        month_dict[int(date[1])] = month_dict.get(int(date[1]), 0) + 1
+@app.route("/account-dates.json")
+def get_account_data():
+    dates = db.session.query(Account.created_at).all()
 
-    #create list of counts per month per year to send
-    month_counts = []
-    for key, value in sorted(years.items()):
-        if key == 2016 or key == 2017:
-            counts = []
-            for month, count in sorted(years.get(key).items()):
-                counts.append(count)
-            month_counts.append(counts)
+    only_months = troll_data.parse_account_data(dates)
+    data = troll_data.count_per_month(only_months)
 
-    data_dict = {
-            "labels": [
-                "Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "Jun",
-                "Jul",
-                "Aug",
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec"
-            ],
-            "datasets": [
-                {
-                    "data": month_counts[0],
-                    "backgroundColor": [
-                        "#FF6384",
-                        "#36A2EB",
-                    ],
-                    "hoverBackgroundColor": [
-                        "#FF6384",
-                        "#36A2EB",
-                    ]
-                }]
-        }
-
-    return jsonify(data_dict)
+    return jsonify({"data": data})
 
 
 if __name__ == '__main__':

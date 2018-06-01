@@ -36,24 +36,73 @@ function getLabel(evt) {
 
 $("#tweet-form").on("submit", getLabel);
 
-let ctx_line = $("#tweetTimeChart").get(0).getContext("2d");
+let labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+let ctx_tweet_line = $("#tweetTimeChart").get(0).getContext("2d");
+
+//worry about adding marker later
 $.get("/tweet-dates.json", function (results) {
-    //console.log(results.datasets.months);
-    let myLineChart = new Chart(ctx_line, {
+    console.log(results.data[0]);
+    console.log(results.data[1]);
+    new Chart(ctx_tweet_line, {
         type: 'line',
-        data: results,
+        data: {"labels": labels,
+                 "datasets": [
+                    {
+                        "label": "2016",
+                        "fill": false,
+                        "data": results.data[0],
+                        "borderColor": "#428ff4"
+                    },
+
+                    {
+                        "label": "2017",
+                        "fill": false,
+                        "data": results.data[1],
+                        "borderColor": "#7626b7"
+                    }
+                ]
+        },
         options: {
             responsive : true,
             scales: {
-                xAxes: [{
-                    time: {
-                        unit: 'month'
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Number of Tweets"
                     }
                 }]
             }
         }
     });
+});
 
-    $("#tweetLegend").html(myLineChart.generateLegend());
+let ctx_account_line = $("#accountTimeChart").get(0).getContext("2d");
+
+$.get("/account-dates.json", function (results) {
+    let myLineChart = new Chart(ctx_account_line, {
+        type: 'line',
+        data: {"labels": labels,
+                 "datasets": [
+                    {
+                        "label": "2016",
+                        "fill": false,
+                        "data": results.data[0],
+                        "borderColor": "#428ff4"
+                    }
+                ]
+        },
+        options: {
+            responsive : true,
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Number of Accounts Created"
+                    }
+                }]
+            }
+        }
+    });
 });
