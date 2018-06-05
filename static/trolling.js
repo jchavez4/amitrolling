@@ -41,6 +41,24 @@ let labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 
 let ctx_tweet_line = $("#tweetTimeChart").get(0).getContext("2d");
 
+let marker = [
+                {
+                    drawTime: "afterDatasetsDraw",
+                    id: "vline",
+                    type: "line",
+                    mode: "vertical",
+                    scaleID: "x-axis-0",
+                    value: "Oct",
+                    borderColor: "black",
+                    borderWidth: 5,
+                    label: {
+                      backgroundColor: "red",
+                      content: "2016 Presidential Election",
+                      enabled: true
+                    }
+                }
+            ];
+
 //worry about adding marker later
 $.get("/tweet-dates.json", function (results) {
     new Chart(ctx_tweet_line, {
@@ -64,6 +82,9 @@ $.get("/tweet-dates.json", function (results) {
         },
         options: {
             responsive : true,
+            annotation: {
+                annotations: marker
+            },
             scales: {
                 yAxes: [{
                     scaleLabel: {
@@ -93,6 +114,9 @@ $.get("/account-dates.json", function (results) {
         },
         options: {
             responsive : true,
+            annotation: {
+                annotations: marker
+            },
             scales: {
                 yAxes: [{
                     scaleLabel: {
@@ -112,8 +136,8 @@ $.get("/common-words.json", function (results) {
     WordCloud(word_cloud, {
         list: results.data,
         weightFactor: 3.5,
-        fontFamily: 'Average, Times, serif',
-        color: "random-dark",
+        fontFamily: 'Average, Century Gothic, sans-serif',
+        color: "random-light",
         backgroundColor: '#ffffff',
         rotateRatio: 0
     });
