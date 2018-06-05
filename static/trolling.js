@@ -43,8 +43,6 @@ let ctx_tweet_line = $("#tweetTimeChart").get(0).getContext("2d");
 
 //worry about adding marker later
 $.get("/tweet-dates.json", function (results) {
-    console.log(results.data[0]);
-    console.log(results.data[1]);
     new Chart(ctx_tweet_line, {
         type: 'line',
         data: {"labels": labels,
@@ -106,3 +104,18 @@ $.get("/account-dates.json", function (results) {
         }
     });
 });
+
+
+let word_cloud = $("#wordCloud").get(0);
+
+$.get("/common-words.json", function (results) {
+    WordCloud(word_cloud, {
+        list: results.data,
+        weightFactor: 3.5,
+        fontFamily: 'Average, Times, serif',
+        color: "random-dark",
+        backgroundColor: '#ffffff',
+        rotateRatio: 0
+    });
+});
+

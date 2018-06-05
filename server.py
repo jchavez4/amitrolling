@@ -218,6 +218,14 @@ def get_account_data():
     return jsonify({"data": data})
 
 
+@app.route("/common-words.json")
+def get_common_words():
+    all_text = db.session.query(Tweet.text).all()
+
+    most_common = troll_data.get_words(all_text)
+
+    return jsonify({"data": most_common})
+
 if __name__ == '__main__':
     connect_to_db(app)
     app.run(port=5000, host='0.0.0.0', debug=True)

@@ -118,6 +118,7 @@ def classify(tweet_text):
 
     return label[0]
 
+
 if __name__ == '__main__':
     X, y = freq_matrix()
 
