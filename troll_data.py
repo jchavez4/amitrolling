@@ -6,9 +6,6 @@ import re
 from collections import Counter
 from nltk.corpus import stopwords
 
-#stopwords = nltk.download("stopwords")
-#nltk.download('words')
-
 #could do timeline of tweets
 #do timeline of creation of accounts
 #most frequent words found in the russian troll tweets in general
@@ -16,20 +13,22 @@ from nltk.corpus import stopwords
     #most frequent words after election
 
 
-def parse_account_data(dates):
-    only_months = []
+def count_per_year(dates):
+    count = {}
 
     for date in dates:
-        tmp = []
         if date[0]:
             separated = date[0].split()
-            tmp.append(separated[-1])
-            #get numerical month from str abbreviation
-            month = list(calendar.month_abbr).index(separated[1])
-            tmp.append(month)
-            only_months.append(tmp)
+            year = int(separated[-1])
+            count[year] = count.get(year, 0) + 1
 
-    return only_months
+    year_count = []
+
+    for key, value in sorted(count.items()):
+        if key > 2012:
+            year_count.append(value)
+
+    return year_count
 
 
 def count_per_month(only_months):
@@ -45,8 +44,9 @@ def count_per_month(only_months):
 
     #create list of counts per month per year to send
     month_counts = []
+
     for key, value in sorted(years.items()):
-        if key == 2016 or key == 2017:
+        if key > 2015:
             counts = []
             for month, count in sorted(years.get(key).items()):
                 counts.append(count)
@@ -54,26 +54,29 @@ def count_per_month(only_months):
 
     return month_counts
 
+
 def get_words(all_text):
     only_words = []
 
     regex = re.compile('[^a-zA-Z]')
-    stop = set(stopwords.words("english") + ["rt", "via", "https", "amp"])
+    stop = set(stopwords.words("english") + ["rt", "via", "amp"])
 
     for item in all_text:
         if item[0]:
             no_punct = item[0].encode("utf-8").translate(None, string.punctuation)
-            words = no_punct.strip(".").split()
+            words = no_punct.split()
         for word in words:
             word = regex.sub('', word).lower()
-            if word not in stop and "http" not in word and not word.isdigit():
-                only_words.append(word)
+            if len(word) > 1:
+                if word not in stop and "http" not in word:
+                    only_words.append(word)
 
     c = Counter(only_words)
 
     top_100 = normalize_count(c)
 
     return top_100
+
 
 def normalize_count(c):
     #total number of valid words in corpus of text

@@ -1,43 +1,67 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    <div class="container">
 
-        <form id="tweet-form">
-            <div class="form-group">
-                <h2>Tweet Link
+    <!-- Intro Header -->
+    <header class="masthead">
+      <div class="intro-body">
+          <div class="row">
+            <div class="col-lg-8 mx-auto">
+              <h1 class="brand-heading">TrolliAm</h1>
+              <h3 class="intro-text">Using a dataset of 200,000 Russian troll tweets as training data, TrolliAm, classifies tweets as either a "troll" or a "nontroll".</h3>
+                <h2 class="intro-text">Curious? Keep scrolling.</h2>
+            </div>
+          </div>
+        </div>
+    </header>
+
+    <section id="tweet-form" class="content-section text-center">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <form id="tweet-form">
+                <div class="form-group">
+                    <h2>Link a Tweet</h2>
                     <input class="form-control" type="url" id="tweet-link">
-                </h2>
+                </div>
+
+                <div id="embed-tweet"></div>
+
+                <div class="form-group">
+                    <button type="submit" id="tweet-form-bttn" class="btn btn-primary">Troll?</button>
+                </div>
+            </form> 
+
+            <div><h4 id="label"></h4></div>
+
+          </div>
+        </div>
+    </section>
+
+    <section id="wordChart" class="content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="lead">These are the top 100 used words among the troll tweets. 'Trump', 'Hillary', 'Clinton', and 'Obama' make up the top 4. Mouse over to see some interesting percentages.</h1>
+                <canvas id="wordCloud" data-toggle="tooltip" width="900" height="900"></canvas>
             </div>
+        </div>
+    </section>
 
-            <div id="embed-tweet"></div>
+    <section id="tweetChart" class="content-section text-center">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <h1 class="white">Leading up to the Presidential election, the number of tweets per month from troll accounts steadily increased, reaching a peak during the month of the Presidential election and rapidly declining in the year following.</h1>
+            <canvas id="tweetTimeChart"></canvas>
+          </div>
+        </div>
+    </section>
 
-            <div class="form-group">
-                <button type="submit" id="tweet-form-bttn" class="btn btn-primary">Troll?</button>
-            </div>
-        </form> 
+    <section id="accountChart" class="content-section text-center">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+              <h1 class="white">Although the Russian troll accounts were most active in the year of 2016, the majority of these accounts were actually created in 2014, two years prior to the election.</h1>
+            <canvas id="accountTimeChart"></canvas>
+          </div>
+        </div>
+    </section>
 
-        <div><h4 id="label"></h4></div>
-
-        <form action="/logout">
-            <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Logout</button>
-            </div>
-        </form>
-    
-    </div>
-
-    <div class="container">
-        <canvas id="tweetTimeChart"></canvas>
-
-        <canvas id="accountTimeChart"></canvas>
-
-        <canvas id="wordCloud" width="1200" height="600"></canvas>
-    </div>
-
-    <div class="container" id="wordCloud"></div>
-
-    <script src="http://code.jquery.com/jquery.js"></script>
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-    <script src="/static/trolling.js"></script>
 {% endblock %}

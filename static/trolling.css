@@ -1,0 +1,99 @@
+.container-fluid {
+    padding: 0;
+}
+.navbar {
+    font-family: 'Montserrat', sans-serif;
+    background: url("./img/background.png") no-repeat bottom center scroll;
+}
+
+.navbar-brand {
+    font-size: 24;
+    color: white !important;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: white !important;
+}
+
+.btn {
+    background-color: #F30261 !important;
+    border-color: #F30261 !important;
+}
+
+.cover-heading {
+    font-family: 'Montserrat', sans-serif;
+    color: black;
+}
+
+.lead {
+    font-family: 'Montserrat', sans-serif;
+    color: black;
+    font-size: 24;
+}
+
+.white {
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    font-size: 24;
+    padding-bottom: 25px;
+
+}
+
+.masthead {
+    display: table;
+    width: 100%;
+    height: 100%;
+    padding: 200px 0;
+    text-align: center;
+    color: white;
+    background-color: #250447;
+}
+
+.masthead .intro-body {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.masthead .intro-body .brand-heading {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: white;
+}
+
+.masthead .intro-body .intro-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    color: white;
+}
+
+#tweet-form {
+    background-color: #EDBC05;
+}
+
+#tweetChart {
+    background-color: #250447;
+}
+
+#accountChart {
+    background-color: #EDBC05;
+}
+
+.content-section {
+    display: table;
+    width: 100%;
+    height: 100%;
+    padding: 200px 0;
+    text-align: center;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.form-group {
+    font-family: 'Montserrat', sans-serif;
+    padding-left: 25px;
+}
+
+#embed-tweet {
+    padding-left: 25%;
+}

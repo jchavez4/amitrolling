@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    <div class="container">
-        <form action="/authorize">
-            <button type="submit" class="btn btn-primary">Sign in with Twitter</button>
-         </form>
-     </div>
+<div class="sign-in">
+     <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+        <main role="main" class="inner-cover text-center">
+            <h1 class="cover-heading">Is that a troll tweet?</h1>
+            <p class="lead">Use TrolliAm to test it.</p>
+            <form class="lead" action="/authorize">
+                <button type="submit" class="btn btn-primary btn-lg">Sign in with Twitter</button>
+            </form>
+        </main>
+    </div>
+</div>
 {% endblock %}

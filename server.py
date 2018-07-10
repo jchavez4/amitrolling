@@ -120,34 +120,6 @@ def set_access_token():
     return redirect("/")
 
 
-@app.route("/get-timeline.json")
-def embed_timeline():
-    tweets = api.GetHomeTimeline()
-
-    timeline_id = create_collection(tweets)
-
-    html = '<a class="twitter-timeline"href="https://twitter.com/{}/timelines/{}">{}</a>'.format("_", timeline_id, "User Timeline")
-
-    return jsonify({"html": html})
-
-
-def create_collection(tweets):
-    payload = {'name': 'test_collection'}
-    response = api._RequestUrl('https://api.twitter.com/1.1/collections/create.json',
-                               'POST', data=payload)
-
-    data = api._ParseAndCheckTwitter(response.content.decode('utf-8'))
-
-    timeline_id = data['response']['timeline_id']
-
-    for tweet in tweets:
-        payload = {'id': timeline_id, 'tweet_id': tweet.id}
-        response = api._RequestUrl('https://api.twitter.com/1.1/collections/entries/add.json',
-                                   'POST', data=payload)
-
-    return timeline_id
-
-
 @app.route("/get-embed-tweet.json", methods=["POST"])
 def embed_tweet():
     """
@@ -212,19 +184,30 @@ def get_tweet_dates():
 def get_account_data():
     dates = db.session.query(Account.created_at).all()
 
-    only_months = troll_data.parse_account_data(dates)
-    data = troll_data.count_per_month(only_months)
+    data = troll_data.count_per_year(dates)
+    #only_months = troll_data.parse_account_data(dates)
+
+    #data = troll_data.count_per_month(only_months)
 
     return jsonify({"data": data})
 
 
 @app.route("/common-words.json")
+
 def get_common_words():
+
+    if hasattr(get_common_words, 'response'):
+        return get_common_words.response
+
     all_text = db.session.query(Tweet.text).all()
 
     most_common = troll_data.get_words(all_text)
 
-    return jsonify({"data": most_common})
+    response = jsonify({"data": most_common})
+    
+    get_common_words.response = response
+    
+    return response
 
 if __name__ == '__main__':
     connect_to_db(app)
